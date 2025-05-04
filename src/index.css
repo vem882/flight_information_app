@@ -131,3 +131,228 @@ input {
   background: #f9f9f9;
   max-width: '500px'
 }
+/* Tyylit lentotaululle */
+.info-view table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+.info-view th, .info-view td {
+  padding: 0.7em 0.5em;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1em;
+}
+
+.info-view th {
+  background: #f5f7fa;
+  font-weight: 600;
+  color: #213547;
+}
+
+.info-view tr:last-child td {
+  border-bottom: none;
+}
+
+.info-view tr:hover {
+  background: #f0f4ff;
+}
+
+@media (max-width: 600px) {
+  .info-view table, .info-view thead, .info-view tbody, .info-view tr, .info-view th, .info-view td {
+    display: block;
+    width: 100%;
+  }
+  .info-view thead {
+    display: none;
+  }
+    .info-view tr {
+      margin-bottom: 1em;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      background: #fff;
+      padding: 0.5em 0.3em;
+    }
+    .info-view tbody tr:first-child {
+      margin-top: 1.2em; /* Lisää yläreunaan tilaa ensimmäiselle riville */
+    }
+  .info-view td {
+    border: none;
+    position: relative;
+    padding-top: 0;
+    padding-left: 50%;
+    font-size: 1em;
+    min-height: 1.2em;
+  }
+  .info-view td:before {
+    position: absolute;
+    left: 0.7em;
+    top: 0;
+    width: 45%;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #888;
+    content: attr(data-label);
+  }
+}
+
+.flight-stats {
+  margin-bottom: 2em;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1.2em 1em 1.5em 1em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1em;
+}
+
+.stat-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1em 0.7em;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 70px;
+}
+
+.stat-label {
+  color: #666;
+  font-size: 0.98em;
+  margin-bottom: 0.3em;
+}
+
+.stat-value {
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #213547;
+}
+
+.stat-box.cancelled .stat-value {
+  color: #d32f2f;
+}
+
+.stat-box.delayed .stat-value {
+  color: #f9a825;
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7em;
+  }
+}
+
+.flight-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flight-modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 2em 1.5em;
+  min-width: 320px;
+  max-width: 95vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3em 0.7em;
+  cursor: pointer;
+}
+.flight-modal-content ul {
+  padding-left: 0;
+  list-style: none;
+}
+.flight-modal-content li {
+  margin-bottom: 0.5em;
+}
+
+
+.flight-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.flight-modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 2em 1.5em;
+  min-width: 320px;
+  max-width: 95vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  position: relative;
+}
+.close-btn {
+  position: absolute;
+  right: 1em;
+  top: 1em;
+  background: #eee;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3em 0.7em;
+  cursor: pointer;
+}
+.flight-modal-title {
+  margin-top: 0;
+  margin-bottom: 1em;
+  color: #1976d2;
+  font-size: 1.3em;
+}
+.flight-details-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background: #fafdff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(25, 118, 210, 0.06);
+}
+.flight-details-table .label {
+  font-weight: 700;
+  background: #e3eafc;
+  color: #1976d2;
+  width: 40%;
+  padding: 0.6em 0.9em;
+  font-size: 1.08em;
+  letter-spacing: 0.02em;
+}
+.flight-details-table td {
+  padding: 0.6em 0.9em;
+  font-size: 1.08em;
+}
+.flight-details-table tr:not(:last-child) td {
+  border-bottom: 1px solid #d0d7e6;
+}
+.flight-details-table .value {
+  color: #222;
+  font-weight: 600;
+  background: #fff;
+  letter-spacing: 0.01em;
+}
