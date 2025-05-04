@@ -1,54 +1,66 @@
-# React + TypeScript + Vite
+# Flight Information App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Tämä sovellus näyttää reaaliaikaista lentotietoa suomalaisilta lentokentiltä. Sovellus on rakennettu Reactilla, TypeScriptillä ja Vite:llä. Backend on toteutettu Expressillä ja toimii välipalvelimena ulkoisiin rajapintoihin (Finavia ja Flightradar24).
 
-Currently, two official plugins are available:
+## Ominaisuudet
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Hae lentokentän tiedot IATA- tai ICAO-koodilla (vain sallitut suomalaiset kentät)
+- Näe päivän saapuvat ja lähtevät lennot, sekä tilastot (perutut, myöhässä, suunnitellut)
+- Selaa lentoja sivuittain (myös aiemmat lennot tältä päivältä)
+- Klikkaa lennon numeroa nähdäksesi lennon tarkemmat tiedot (haetaan Flightradar24 API:sta)
+- Kaikki API-kutsut cachetaan backendissä, jotta ulkoisia pyyntöjä tehdään mahdollisimman vähän
 
-## Expanding the ESLint configuration
+## Käyttöönotto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Asenna riippuvuudet:**
+   ```
+   npm install
+   ```
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+2. **Luo `.env`-tiedosto juureen ja lisää API-avaimet:**
+   ```
+   FR24_API_TOKEN=oma_flightradar24_token
+   FINAVIA_APP_KEY=oma_finavia_app_key
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Asenna concurrently, jos haluat käynnistää frontin ja backin yhdellä komennolla:**
+   ```
+   npm install --save-dev concurrently
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+4. **Käynnistä kehitysympäristö:**
+   ```
+   npm run dev
+   ```
+   Tämä käynnistää sekä frontendin (Vite) että backendin (Express).
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Projektin rakenne
+
+- **/src/components/** – React-komponentit (mm. Airport.tsx)
+- **/src/functions/** – API-kutsujen funktiot
+- **/server/server.js** – Express-backend, joka välittää ja cachetaa ulkoiset API-kutsut
+- **/src/index.css** – Sovelluksen tyylit
+
+## Backendin suojaus
+
+- Vain sallitut suomalaiset lentokentät (IATA-koodit) hyväksytään
+- Kaikki API-kutsut cachetaan 5 minuutiksi
+- Jos lennon tietoja ei löydy, käyttäjälle näytetään selkeä ilmoitus
+
+## Kehittäjälle
+
+- Frontend: React + TypeScript + Vite
+- Backend: Express + Axios + dotenv + xml2js
+- Tyylit: CSS-tiedostossa, ei inline-tyylejä
+- ESLint käytössä koodin laadun varmistamiseksi
+
+## Huomioitavaa
+
+- Flightradar24 API vaatii voimassaolevan tokenin
+- Finavian API vaatii oman app_key:n
+- Sovellus toimii paikallisesti osoitteessa [http://localhost:5173](http://localhost:5173) (oletus)
+
+---
+
+**Tekijä:**  
+Martin Negin 
