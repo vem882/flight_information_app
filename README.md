@@ -9,11 +9,11 @@ The app is built with **React**, **TypeScript**, and **Vite** for the frontend, 
 ## Screenshot
 
 <div align="center">
-  <a href="img/1.png" target="_blank"><img src="img/1.png" alt="Screenshot 1" width="180"/></a>
-  <a href="img/2.png" target="_blank"><img src="img/2.png" alt="Screenshot 2" width="180"/></a>
-  <a href="img/3.png" target="_blank"><img src="img/3.png" alt="Screenshot 3" width="180"/></a>
-  <a href="img/4.png" target="_blank"><img src="img/4.png" alt="Screenshot 4" width="180"/></a>
-  <a href="img/5.png" target="_blank"><img src="img/5.png" alt="Screenshot 5" width="180"/></a>
+  <a href="img/1.png" target="_blank"><img src="img/1.png" alt="Screenshot 1" width="180" height="180"/></a>
+  <a href="img/2.png" target="_blank"><img src="img/2.png" alt="Screenshot 2" width="180" height="180"/></a>
+  <a href="img/3.png" target="_blank"><img src="img/3.png" alt="Screenshot 3" width="180" height="180"/></a>
+  <a href="img/4.png" target="_blank"><img src="img/4.png" alt="Screenshot 4" width="180" height="180"/></a>
+  <a href="img/5.png" target="_blank"><img src="img/5.png" alt="Screenshot 5" width="180" height="180"/></a>
 </div>
 
 ---
