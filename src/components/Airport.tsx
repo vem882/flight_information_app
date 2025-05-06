@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { doApiCall, doApiCall2, getFlightSummary } from '../functions'
+import { FaPlaneDeparture, FaPlaneArrival, FaGlobeEurope, FaSearchLocation, FaChartBar } from "react-icons/fa"
+import "../Home.css"
+
 
 export const Airport = () => {
   const airportUrl = 'https://fr24api.flightradar24.com/api/static/airports/'
@@ -150,9 +153,13 @@ export const Airport = () => {
   }
 
   return (
-    <div>
-      <h2>Hae lentokenttä</h2>
-      <p>Syötä lentokentän IATA- tai ICAO-koodi (esim. HEL) saadaksesi lisätietoja.</p>
+    <div className="home-container">
+      <section className="home-section">
+        <h2><FaSearchLocation className="section-icon" /> Hae lentokenttä</h2>
+        <p>
+          Syötä suomalaisen lentokentän IATA- tai ICAO-koodi (esim. <b>HEL</b>), niin näet kentän perustiedot, päivän saapuvat ja lähtevät lennot sekä tilastot.
+        </p>
+      </section>
       <form
         className="vertical-form"
         onSubmit={e => {
