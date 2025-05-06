@@ -93,21 +93,14 @@ FR24_API_TOKEN=your_flightradar24_token
 FINAVIA_APP_KEY=your_finavia_app_key
 ```
 
-### 3. To DO: Install `concurrently` (for running frontend and backend together) 
-
-```bash
-npm install --save-dev concurrently
-```
-
-### 4. Start the development environment
+### 3. Start the development environment
 
 ```bash
 frontend 
 npm run dev
 
 backend 
-cd server
-node server.js
+npm run backend
 ```
 
 This will start both the frontend (Vite) and backend (Express) servers.

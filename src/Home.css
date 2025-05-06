@@ -8,10 +8,6 @@
   box-shadow: 0 2px 16px rgba(25, 118, 210, 0.07);
 }
 
-.home-hero {
-  text-align: center;
-  margin-bottom: 2em;
-}
 
 .hero-icon {
   font-size: 3em;
@@ -53,13 +49,6 @@
   font-size: 2.5em;
   color: #1976d2;
   opacity: 0.7;
-}
-
-.hero-image {
-  width: 180px;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(25, 118, 210, 0.10);
-  object-fit: cover;
 }
 
 .fav-col-desktop {

@@ -1,13 +1,19 @@
 {
   "name": "flight_intermation_app",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "author": {
+    "name": "Martin Negin",
+    "email": "martin.negin@gmail.com",
+    "url": "https://github.com/vem882"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "backend": "node server/server.js"
   },
   "dependencies": {
     "axios": "^1.9.0",
