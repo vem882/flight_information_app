@@ -5,13 +5,18 @@ This project was created as my coursework for a web programming course.
 The app is built with **React**, **TypeScript**, and **Vite** for the frontend, and **Express** for the backend, which acts as a proxy and cache for external APIs (Finavia and Flightradar24).
 
 ---
+
 ## Screenshot
-  <a href="img/1.png" target="_blank"><img src="img/1.png" alt="Screenshot 1" width="180"/></a><br>
-  <a href="img/2.png" target="_blank"><img src="img/2.png" alt="Screenshot 2" width="180"/></a><br>
-  <a href="img/3.png" target="_blank"><img src="img/3.png" alt="Screenshot 3" width="180"/></a><br>
-  <a href="img/4.png" target="_blank"><img src="img/4.png" alt="Screenshot 4" width="180"/></a><br>
 
+<div align="center">
+  <a href="img/1.png" target="_blank"><img src="img/1.png" alt="Screenshot 1" width="180"/></a>
+  <a href="img/2.png" target="_blank"><img src="img/2.png" alt="Screenshot 2" width="180"/></a>
+  <a href="img/3.png" target="_blank"><img src="img/3.png" alt="Screenshot 3" width="180"/></a>
+  <a href="img/4.png" target="_blank"><img src="img/4.png" alt="Screenshot 4" width="180"/></a>
+  <a href="img/5.png" target="_blank"><img src="img/5.png" alt="Screenshot 5" width="180"/></a>
+</div>
 
+---
 
 ## Features
 
@@ -30,11 +35,17 @@ The app is built with **React**, **TypeScript**, and **Vite** for the frontend, 
 - **Airline Search:**  
   Search for airline details by ICAO code.
 
+- **Recently Searched:**  
+  Both airport and airline search fields suggest your recent searches, and you can quickly select them.
+
+- **Favorite Flight:**  
+  You can mark a flight as favorite (star icon). The favorite flight is saved in your browser and always shown first in the arrivals/departures table when you return.
+
 - **Backend Caching:**  
   All API requests are cached for 5 minutes to minimize external API calls and improve performance.
 
 - **Responsive Design:**  
-  The UI is fully responsive and visually appealing on both desktop and mobile devices, with a modern navigation bar and mobile burger menu.
+  The UI is fully responsive and visually appealing on both desktop and mobile devices. On mobile, the favorite star icon is shown next to the flight number for better usability.
 
 ---
 
@@ -82,13 +93,20 @@ FR24_API_TOKEN=your_flightradar24_token
 FINAVIA_APP_KEY=your_finavia_app_key
 ```
 
+### 3. To DO: Install `concurrently` (for running frontend and backend together) 
+
+```bash
+npm install --save-dev concurrently
+```
+
 ### 4. Start the development environment
 
 ```bash
+frontend 
 npm run dev
-```
-Start Backend in server folder.
-```bash
+
+backend 
+cd server
 node server.js
 ```
 
@@ -127,6 +145,12 @@ flight_information_app/
 - **/api/flights**  
   Returns arrivals and departures for a given airport from Finavia API.
 
+- **/api/airline**  
+  Returns airline details from Flightradar24 by ICAO code.
+
+- **/api/airlines**  
+  Returns filtered flights by airport and/or airline from Finavia API.
+
 - **/api/flight-summary**  
   Returns detailed flight info from Flightradar24 for a given flight and time window.
 
@@ -143,6 +167,7 @@ flight_information_app/
 - You need valid API keys for both [Flightradar24](https://fr24api.flightradar24.com/) and [Finavia](https://apiportal.finavia.fi/).
 - The app is intended for Finnish airports only.
 - The backend must be running for the frontend to fetch data.
+- **Mobile UI:** The favorite star icon is shown next to the flight number for better usability.
 
 ---
 

@@ -133,4 +133,31 @@ app.get('/api/flights', async (req, res) => {
   }
 })
 
+app.get('/api/airline', async (req, res) => {
+  const code = req.query.code?.toUpperCase()
+  if (!code || !/^[A-Z0-9]{2,4}$/.test(code)) {
+    return res.status(400).json({ error: 'Invalid airline code' })
+  }
+  const cacheKey = `/api/airline?code=${code}`
+  const cached = getCache(cacheKey)
+  if (cached) return res.json(cached)
+  try {
+    const response = await axios.get(
+      `https://fr24api.flightradar24.com/api/static/airlines/${code}/light`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Version': 'v1',
+          'Authorization': `Bearer ${process.env.FR24_API_TOKEN}`
+        },
+        maxBodyLength: Infinity
+      }
+    )
+    setCache(cacheKey, response.data)
+    res.json(response.data)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
 app.listen(3001, () => console.log('Proxy running on port 3001'))

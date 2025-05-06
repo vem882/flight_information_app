@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { doApiCall, doApiCall2, getFlightSummary } from '../functions'
-import { FaPlaneDeparture, FaPlaneArrival, FaGlobeEurope, FaSearchLocation, FaChartBar } from "react-icons/fa"
+import { FaSearchLocation, FaStar, FaRegStar } from "react-icons/fa"
+import { FaPlaneDeparture, FaPlaneArrival } from "react-icons/fa"
 import "../Home.css"
 
 
@@ -21,6 +22,31 @@ export const Airport = () => {
   const [arrivalsPage, setArrivalsPage] = useState(0)
   const [departuresPage, setDeparturesPage] = useState(0)
   const pageSize = 20
+
+  // Recent search & favorite flight
+  const [recentCodes, setRecentCodes] = useState<string[]>([])
+  const [favoriteFlight, setFavoriteFlight] = useState<any>(null)
+
+  // Lataa recent ja suosikki localStoragesta
+  useEffect(() => {
+    const saved = localStorage.getItem('recentAirportCodes')
+    if (saved) setRecentCodes(JSON.parse(saved))
+    const fav = localStorage.getItem('favoriteFlight')
+    if (fav) setFavoriteFlight(JSON.parse(fav))
+  }, [])
+
+  // Tallenna recent
+  const saveRecentCode = (code: string) => {
+    let updated = [code, ...recentCodes.filter(c => c !== code)].slice(0, 5)
+    setRecentCodes(updated)
+    localStorage.setItem('recentAirportCodes', JSON.stringify(updated))
+  }
+
+  // Tallenna suosikkilento
+  const saveFavoriteFlight = (flight: any) => {
+    setFavoriteFlight(flight)
+    localStorage.setItem('favoriteFlight', JSON.stringify(flight))
+  }
 
   // flightsData on xml2js:n palauttama objekti
   const departuresRaw = flights?.flights?.dep?.body?.flight
@@ -58,9 +84,23 @@ export const Airport = () => {
     })
     .sort((a: any, b: any) => new Date(a.sdt).getTime() - new Date(b.sdt).getTime())
 
-  // Sivutus
-  const arrivalsToShow = arrivalsFiltered.slice(arrivalsPage * pageSize, (arrivalsPage + 1) * pageSize)
-  const departuresToShow = departuresFiltered.slice(departuresPage * pageSize, (departuresPage + 1) * pageSize)
+  // Suosikkilento taulukon ensimmäiseksi
+  const sortWithFavoriteFirst = (flightsArr: any[]) => {
+    if (!favoriteFlight) return flightsArr
+    const idx = flightsArr.findIndex(
+      f => f.fltnr === favoriteFlight.fltnr && f.sdt === favoriteFlight.sdt
+    )
+    if (idx === -1) return flightsArr
+    return [flightsArr[idx], ...flightsArr.slice(0, idx), ...flightsArr.slice(idx + 1)]
+  }
+
+  // Sivuta saapuvat ja lähtevät lennot, suosikki ensin
+  const arrivalsToShow = sortWithFavoriteFirst(
+    arrivalsFiltered.slice(arrivalsPage * pageSize, (arrivalsPage + 1) * pageSize)
+  )
+  const departuresToShow = sortWithFavoriteFirst(
+    departuresFiltered.slice(departuresPage * pageSize, (departuresPage + 1) * pageSize)
+  )
 
   // Hae aiemmat/hae myöhemmät -napit
   const handleArrivalsPrev = () => setArrivalsPage(Math.max(arrivalsPage - 1, 0))
@@ -83,6 +123,7 @@ export const Airport = () => {
     if (response && response.name) {
       setData(response)
       fetchFlights(airportCode)
+      saveRecentCode(airportCode)
     } else {
       setError("Lentokenttää ei löytynyt tai koodi on virheellinen.")
     }
@@ -140,13 +181,13 @@ export const Airport = () => {
     setFlightDetailsError(null)
     setFlightDetailsOpen(true)
     try {
-      // Oletetaan, että haetaan ±1 päivä
+      // Haetaan ±1 päivä
       const from = new Date(new Date(sdt).getTime() - 12 * 3600 * 1000).toISOString()
       const to = new Date(new Date(sdt).getTime() + 36 * 3600 * 1000).toISOString()
       const data = await getFlightSummary(flight, from, to)
       setFlightDetails(data?.data?.[0] || null)
     } catch (e: any) {
-      setFlightDetailsError("Tietojen haku epäonnistui")
+      setFlightDetailsError("Tietoja ei tällä hetkellä saatavilla. Yritä myöhemmin uudelleen.")
     } finally {
       setFlightDetailsLoading(false)
     }
@@ -159,6 +200,37 @@ export const Airport = () => {
         <p>
           Syötä suomalaisen lentokentän IATA- tai ICAO-koodi (esim. <b>HEL</b>), niin näet kentän perustiedot, päivän saapuvat ja lähtevät lennot sekä tilastot.
         </p>
+        {/* Recently searched */}
+        {recentCodes.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontWeight: 500, marginBottom: 4, color: "#1976d2" }}>
+              Recently searched:
+            </div>
+            <ul style={{ display: "flex", gap: "0.5em", listStyle: "none", padding: 0, margin: 0 }}>
+              {recentCodes.map(code => (
+                <li key={code}>
+                  <button
+                    type="button"
+                    style={{
+                      background: "#e3eafc",
+                      border: "none",
+                      borderRadius: 4,
+                      padding: "0.2em 0.7em",
+                      cursor: "pointer",
+                      color: "#1976d2"
+                    }}
+                    onClick={() => {
+                      setAirportCode(code)
+                      fetchAirport()
+                    }}
+                  >
+                    {code}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
       <form
         className="vertical-form"
@@ -185,55 +257,56 @@ export const Airport = () => {
             <p><strong>ICAO:</strong> {data.icao}</p>
           </div>
         )}
-{(arrivalsFiltered.length > 0 || departuresFiltered.length > 0) && (
-  <div className="info-view flight-stats">
-    <h3 style={{ marginTop: 0, marginBottom: "1em" }}>Päivän lentotilasto</h3>
-    <div className="stats-grid">
-      <div className="stat-box">
-        <span className="stat-label">Suunniteltuja lähtöjä</span>
-        <span className="stat-value">{departuresFiltered.length}</span>
-      </div>
-      <div className="stat-box">
-        <span className="stat-label">Suunniteltuja saapumisia</span>
-        <span className="stat-value">{arrivalsFiltered.length}</span>
-      </div>
-      <div className="stat-box cancelled">
-        <span className="stat-label">Peruttuja lähtöjä</span>
-        <span className="stat-value">{departuresFiltered.filter(f => (f.prt_f || '').toLowerCase().includes('peruttu')).length}</span>
-      </div>
-      <div className="stat-box cancelled">
-        <span className="stat-label">Peruttuja saapumisia</span>
-        <span className="stat-value">{arrivalsFiltered.filter(f => (f.prt_f || '').toLowerCase().includes('peruttu')).length}</span>
-      </div>
-      <div className="stat-box delayed">
-        <span className="stat-label">Myöhässä olevia lähtöjä</span>
-        <span className="stat-value">{departuresFiltered.filter(f => {
-          const s = f.sdt ? new Date(f.sdt) : null
-          const e = f.est_d ? new Date(f.est_d) : null
-          return s && e && e.getTime() > s.getTime()
-        }).length}</span>
-      </div>
-      <div className="stat-box delayed">
-        <span className="stat-label">Myöhässä olevia saapumisia</span>
-        <span className="stat-value">{arrivalsFiltered.filter(f => {
-          const s = f.sdt ? new Date(f.sdt) : null
-          const e = f.est_d ? new Date(f.est_d) : null
-          return s && e && e.getTime() > s.getTime()
-        }).length}</span>
-      </div>
-    </div>
-  </div>
-)}
+        {(arrivalsFiltered.length > 0 || departuresFiltered.length > 0) && (
+          <div className="info-view flight-stats">
+            <h3 style={{ marginTop: 0, marginBottom: "1em" }}>Päivän lentotilasto</h3>
+            <div className="stats-grid">
+              <div className="stat-box">
+                <span className="stat-label">Suunniteltuja lähtöjä</span>
+                <span className="stat-value">{departuresFiltered.length}</span>
+              </div>
+              <div className="stat-box">
+                <span className="stat-label">Suunniteltuja saapumisia</span>
+                <span className="stat-value">{arrivalsFiltered.length}</span>
+              </div>
+              <div className="stat-box cancelled">
+                <span className="stat-label">Peruttuja lähtöjä</span>
+                <span className="stat-value">{departuresFiltered.filter(f => (f.prt_f || '').toLowerCase().includes('peruttu')).length}</span>
+              </div>
+              <div className="stat-box cancelled">
+                <span className="stat-label">Peruttuja saapumisia</span>
+                <span className="stat-value">{arrivalsFiltered.filter(f => (f.prt_f || '').toLowerCase().includes('peruttu')).length}</span>
+              </div>
+              <div className="stat-box delayed">
+                <span className="stat-label">Myöhässä olevia lähtöjä</span>
+                <span className="stat-value">{departuresFiltered.filter(f => {
+                  const s = f.sdt ? new Date(f.sdt) : null
+                  const e = f.est_d ? new Date(f.est_d) : null
+                  return s && e && e.getTime() > s.getTime()
+                }).length}</span>
+              </div>
+              <div className="stat-box delayed">
+                <span className="stat-label">Myöhässä olevia saapumisia</span>
+                <span className="stat-value">{arrivalsFiltered.filter(f => {
+                  const s = f.sdt ? new Date(f.sdt) : null
+                  const e = f.est_d ? new Date(f.est_d) : null
+                  return s && e && e.getTime() > s.getTime()
+                }).length}</span>
+              </div>
+            </div>
+          </div>
+        )}
         <div>
           {flightsLoading && <p>Ladataan lentoja...</p>}
           {flightsError && <p>Virhe lentojen haussa: {flightsError}</p>}
           {arrivalsToShow.length > 0 && (
             <div className='info-view'>
-              <h3>Saapuvat lennot</h3>
+              <FaPlaneArrival className="plane-visual" /><h3>Saapuvat lennot</h3>
               <table>
                 <thead>
                   <tr>
-                    <th>Lennonro</th>
+                    <th>Lennon Nro</th>
+                    <th className="fav-col-desktop">Suosikki</th>
                     <th>Kenttä</th>
                     <th>Aikataulu</th>
                     <th>Status</th>
@@ -251,15 +324,39 @@ export const Airport = () => {
                     if (delayMin > 0 && delayMin <= 15) rowStyle = { background: '#fffbe6' }
                     if (delayMin > 15) rowStyle = { background: '#ffeaea' }
 
+                    const isFavorite = favoriteFlight &&
+                      f.fltnr === favoriteFlight.fltnr &&
+                      f.sdt === favoriteFlight.sdt
+
                     return (
                       <tr key={f.fltnr + f.sdt + i} style={rowStyle}>
-                        <td data-label="Lennonro">
+                        <td data-label="Lennon Nro" style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <button
                             className="flight-link"
                             onClick={() => handleFlightClick(f.fltnr, f.sdt)}
                             style={{ background: "none", border: "none", color: "#1976d2", cursor: "pointer", textDecoration: "underline" }}
                           >
                             {f.fltnr}
+                          </button>
+                          {/* Suosikki-ikoni mobiilissa */}
+                          <span className="fav-icon-mobile">
+                            <button
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                              onClick={() => saveFavoriteFlight({ fltnr: f.fltnr, sdt: f.sdt })}
+                              title={isFavorite ? "Poista suosikeista" : "Lisää suosikiksi"}
+                            >
+                              {isFavorite ? <FaStar color="#FFD700" /> : <FaRegStar color="#888" />}
+                            </button>
+                          </span>
+                        </td>
+                        {/* Suosikki-ikoni desktopissa */}
+                        <td className="fav-col-desktop">
+                          <button
+                            style={{ background: "none", border: "none", cursor: "pointer" }}
+                            onClick={() => saveFavoriteFlight({ fltnr: f.fltnr, sdt: f.sdt })}
+                            title={isFavorite ? "Poista suosikeista" : "Lisää suosikiksi"}
+                          >
+                            {isFavorite ? <FaStar color="#FFD700" /> : <FaRegStar color="#888" />}
                           </button>
                         </td>
                         <td data-label="Kenttä">{f.route_1} {f.route_n_1}</td>
@@ -293,11 +390,12 @@ export const Airport = () => {
           )}
           {departuresToShow.length > 0 && (
             <div className='info-view'>
-              <h3>Lähtevät lennot</h3>
+              <FaPlaneDeparture className="plane-visual" /><h3>Lähtevät lennot</h3>
               <table>
                 <thead>
                   <tr>
-                    <th>Lennonro</th>
+                    <th>Lennon Nro</th>
+                    <th className="fav-col-desktop">Suosikki</th>
                     <th>Kenttä</th>
                     <th>Aikataulu</th>
                     <th>Status</th>
@@ -315,15 +413,39 @@ export const Airport = () => {
                     if (delayMin > 0 && delayMin <= 15) rowStyle = { background: '#fffbe6' }
                     if (delayMin > 15) rowStyle = { background: '#ffeaea' }
 
+                    const isFavorite = favoriteFlight &&
+                      f.fltnr === favoriteFlight.fltnr &&
+                      f.sdt === favoriteFlight.sdt
+
                     return (
                       <tr key={f.fltnr + f.sdt + i} style={rowStyle}>
-                        <td data-label="Lennonro">
+                        <td data-label="Lennon Nro" style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <button
                             className="flight-link"
                             onClick={() => handleFlightClick(f.fltnr, f.sdt)}
                             style={{ background: "none", border: "none", color: "#1976d2", cursor: "pointer", textDecoration: "underline" }}
                           >
                             {f.fltnr}
+                          </button>
+                          {/* Suosikki-ikoni mobiilissa */}
+                          <span className="fav-icon-mobile">
+                            <button
+                              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                              onClick={() => saveFavoriteFlight({ fltnr: f.fltnr, sdt: f.sdt })}
+                              title={isFavorite ? "Poista suosikeista" : "Lisää suosikiksi"}
+                            >
+                              {isFavorite ? <FaStar color="#FFD700" /> : <FaRegStar color="#888" />}
+                            </button>
+                          </span>
+                        </td>
+                        {/* Suosikki-ikoni desktopissa */}
+                        <td className="fav-col-desktop">
+                          <button
+                            style={{ background: "none", border: "none", cursor: "pointer" }}
+                            onClick={() => saveFavoriteFlight({ fltnr: f.fltnr, sdt: f.sdt })}
+                            title={isFavorite ? "Poista suosikeista" : "Lisää suosikiksi"}
+                          >
+                            {isFavorite ? <FaStar color="#FFD700" /> : <FaRegStar color="#888" />}
                           </button>
                         </td>
                         <td data-label="Kenttä">{f.route_1} {f.route_n_1}</td>
@@ -358,49 +480,49 @@ export const Airport = () => {
         </div>
       </div>
       {flightDetailsOpen && (
-  <div className="flight-modal">
-    <div className="flight-modal-content">
-      <button className="close-btn" onClick={() => setFlightDetailsOpen(false)}>Sulje</button>
-      {flightDetailsLoading && <p>Ladataan...</p>}
-      {flightDetailsError && <p style={{ color: 'red' }}>{flightDetailsError}</p>}
-      {flightDetails && (
-        <div>
-          <h2 className="flight-modal-title">
-            Lennon {flightDetails.flight} tiedot
-          </h2>
-          <table className="flight-details-table">
-            <tbody>
-              <tr>
-                <td className="label">Lentoyhtiö</td>
-                <td className="value">{flightDetails.operating_as}</td>
-              </tr>
-              <tr>
-                <td className="label">Koneen tyyppi</td>
-                <td className="value">{flightDetails.type}</td>
-              </tr>
-              <tr>
-                <td className="label">Rekisteri</td>
-                <td className="value">{flightDetails.reg}</td>
-              </tr>
-              <tr>
-                <td className="label">Lähtö</td>
-                <td className="value">{flightDetails.orig_iata} ({flightDetails.orig_icao})</td>
-              </tr>
-              <tr>
-                <td className="label">Kohde</td>
-                <td className="value">{flightDetails.dest_iata} ({flightDetails.dest_icao})</td>
-              </tr>
-              <tr>
-                <td className="label">Lähtöaika</td>
-                <td className="value">{flightDetails.datetime_takeoff ? new Date(flightDetails.datetime_takeoff).toLocaleString('fi-FI') : '-'}</td>
-              </tr>
-              <tr>
-                <td className="label">Saapumisaika</td>
-                <td className="value">{flightDetails.datetime_landed ? new Date(flightDetails.datetime_landed).toLocaleString('fi-FI') : '-'}</td>
-              </tr>
-              <tr>
-                <td className="label">Lennon kesto</td>
-                <td className="value">
+        <div className="flight-modal">
+          <div className="flight-modal-content">
+            <button className="close-btn" onClick={() => setFlightDetailsOpen(false)}>Sulje</button>
+            {flightDetailsLoading && <p>Ladataan...</p>}
+            {flightDetailsError && <p style={{ color: 'red' }}>{flightDetailsError}</p>}
+            {flightDetails && (
+              <div>
+                <h2 className="flight-modal-title">
+                  Lennon {flightDetails.flight} tiedot
+                </h2>
+                <table className="flight-details-table">
+                  <tbody>
+                    <tr>
+                      <td className="label">Lentoyhtiö</td>
+                      <td className="value">{flightDetails.operating_as}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Koneen tyyppi</td>
+                      <td className="value">{flightDetails.type}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Rekisteri</td>
+                      <td className="value">{flightDetails.reg}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Lähtö</td>
+                      <td className="value">{flightDetails.orig_iata} ({flightDetails.orig_icao})</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Kohde</td>
+                      <td className="value">{flightDetails.dest_iata} ({flightDetails.dest_icao})</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Lähtöaika</td>
+                      <td className="value">{flightDetails.datetime_takeoff ? new Date(flightDetails.datetime_takeoff).toLocaleString('fi-FI') : '-'}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Saapumisaika</td>
+                      <td className="value">{flightDetails.datetime_landed ? new Date(flightDetails.datetime_landed).toLocaleString('fi-FI') : '-'}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Lennon kesto</td>
+                      <td className="value">
   {flightDetails.flight_time
     ? (() => {
         const totalMin = Math.round(flightDetails.flight_time / 60)
@@ -410,22 +532,22 @@ export const Airport = () => {
       })()
     : '-'}
 </td>
-              </tr>
-              <tr>
-                <td className="label">Matka</td>
-                <td className="value">{flightDetails.actual_distance ? flightDetails.actual_distance.toFixed(0) + " km" : '-'}</td>
-              </tr>
-              <tr>
-                <td className="label">Status</td>
-                <td className="value">{flightDetails.flight_ended ? "Päättynyt" : "Käynnissä"}</td>
-              </tr>
-            </tbody>
-          </table>
+                    </tr>
+                    <tr>
+                      <td className="label">Matka</td>
+                      <td className="value">{flightDetails.actual_distance ? flightDetails.actual_distance.toFixed(0) + " km" : '-'}</td>
+                    </tr>
+                    <tr>
+                      <td className="label">Status</td>
+                      <td className="value">{flightDetails.flight_ended ? "Päättynyt" : "Käynnissä"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
       )}
-    </div>
-  </div>
-)}
     </div>
   )
 }
