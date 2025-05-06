@@ -200,11 +200,11 @@ export const Airport = () => {
         <p>
           Syötä suomalaisen lentokentän IATA- tai ICAO-koodi (esim. <b>HEL</b>), niin näet kentän perustiedot, päivän saapuvat ja lähtevät lennot sekä tilastot.
         </p>
-        {/* Recently searched */}
+        {/* Äskettä haetut */}
         {recentCodes.length > 0 && (
           <div style={{ marginTop: 12 }}>
             <div style={{ fontWeight: 500, marginBottom: 4, color: "#1976d2" }}>
-              Recently searched:
+              Äskettä haetut:
             </div>
             <ul style={{ display: "flex", gap: "0.5em", listStyle: "none", padding: 0, margin: 0 }}>
               {recentCodes.map(code => (
@@ -438,7 +438,7 @@ export const Airport = () => {
                             </button>
                           </span>
                         </td>
-                        {/* Suosikki-ikoni desktopissa */}
+                        {/* Suosikki-ikoni PC:lle */}
                         <td className="fav-col-desktop">
                           <button
                             style={{ background: "none", border: "none", cursor: "pointer" }}
@@ -522,17 +522,18 @@ export const Airport = () => {
                     </tr>
                     <tr>
                       <td className="label">Lennon kesto</td>
-                      <td className="value">
-  {flightDetails.flight_time
-    ? (() => {
-        const totalMin = Math.round(flightDetails.flight_time / 60)
-        const h = Math.floor(totalMin / 60)
-        const m = totalMin % 60
-        return h > 0 ? `${h} h ${m} min` : `${m} min`
-      })()
-    : '-'}
-</td>
-                    </tr>
+                        <td className="value">
+                        {flightDetails.flight_time ? (
+                          (() => {
+                          const totalMin = Math.round(flightDetails.flight_time / 60);
+                          const h = Math.floor(totalMin / 60);
+                          const m = totalMin % 60;
+                          return h > 0 ? `${h} h ${m} min` : `${m} min`;
+                          })()
+                        ) : (
+                          '-'
+                        )}
+                        </td></tr>
                     <tr>
                       <td className="label">Matka</td>
                       <td className="value">{flightDetails.actual_distance ? flightDetails.actual_distance.toFixed(0) + " km" : '-'}</td>

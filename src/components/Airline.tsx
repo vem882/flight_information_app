@@ -43,8 +43,8 @@ export const Airline = () => {
   return (
     <div className="home-container">
       <section className="home-section">
-        <h2>Search Airline</h2>
-        <p>Enter the airline ICAO code (e.g. FIN) to get more information.</p>
+        <h2>Hae Lentoyhtiö</h2>
+        <p>Syötä lentoyhtiön ICAO koodi  (esim. FIN) saadaksesi lisätietoja lentoyhtiöstä.</p>
         <form
           onSubmit={e => {
             e.preventDefault()
@@ -63,13 +63,13 @@ export const Airline = () => {
               <option value={code} key={code} />
             ))}
           </datalist>
-          <button type="submit" className='haku-button'>Search</button>
+          <button type="submit" className='haku-button'>Hae</button>
         </form>
 
         {recentCodes.length > 0 && (
           <div style={{ marginTop: 18 }}>
             <div style={{ fontWeight: 500, marginBottom: 4, color: "#1976d2" }}>
-              Recently searched:
+              Äskettä haetut:
             </div>
             <ul style={{ display: "flex", gap: "0.5em", listStyle: "none", padding: 0, margin: 0 }}>
               {recentCodes.map(code => (
@@ -95,7 +95,7 @@ export const Airline = () => {
         )}
       </section>
       <div className='result-div'>
-        {loading && <p>Loading airline information...</p>}
+        {loading && <p>Lataan lentoyhtiön tietoja...</p>}
         {error && <p>Error: {error}</p>}
         {data && data.name && (
           <div className='info-view'>
