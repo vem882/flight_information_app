@@ -1,8 +1,17 @@
 # Flight Information App
 
-A modern web application for real-time flight information at Finnish airports. The app is built with **React**, **TypeScript**, and **Vite** for the frontend, and **Express** for the backend, which acts as a proxy and cache for external APIs (Finavia and Flightradar24).
+A web application for real-time flight information at Finnish airports.  
+This project was created as my coursework for a web programming course.  
+The app is built with **React**, **TypeScript**, and **Vite** for the frontend, and **Express** for the backend, which acts as a proxy and cache for external APIs (Finavia and Flightradar24).
 
 ---
+## Screenshot
+  <a href="img/1.png" target="_blank"><img src="img/1.png" alt="Screenshot 1" width="180"/></a><br>
+  <a href="img/2.png" target="_blank"><img src="img/2.png" alt="Screenshot 2" width="180"/></a><br>
+  <a href="img/3.png" target="_blank"><img src="img/3.png" alt="Screenshot 3" width="180"/></a><br>
+  <a href="img/4.png" target="_blank"><img src="img/4.png" alt="Screenshot 4" width="180"/></a><br>
+
+
 
 ## Features
 
@@ -77,6 +86,10 @@ FINAVIA_APP_KEY=your_finavia_app_key
 
 ```bash
 npm run dev
+```
+Start Backend in server folder.
+```bash
+node server.js
 ```
 
 This will start both the frontend (Vite) and backend (Express) servers.
