@@ -115,15 +115,28 @@ This will start both the frontend (Vite) and backend (Express) servers.
 ```
 flight_information_app/
 ├── server/
-│   └── server.js         # Express backend (API proxy & cache)
+│   ├── server.js             # Express backend (API proxy & cache)
+│   ├── .env                  # Backend API keys (FR24_API_TOKEN, FINAVIA_APP_KEY)
 ├── src/
-│   ├── components/       # React components (Home, Airport, Airline, etc.)
-│   ├── functions/        # API call utilities
-│   ├── App.tsx           # Main app component
-│   ├── App.css           # Main app styles
-│   └── index.css         # Global styles
-├── .env                  # API keys 
+│   ├── components/           # React components (Home, Airport, Airline, etc.)
+│   │   ├── Airport.tsx
+│   │   ├── Airline.tsx
+│   │   └── Home.tsx           
+│   │   └── index.tsx    
+│   ├── functions/            # API call utilities ja apufunktiot
+│   │   ├── doApiCall.ts
+│   │   ├── doApiCall2.ts
+│   │   ├── flightSummary.ts
+│   │   └── index.tsx               # Muut funktiot
+│   ├── App.tsx               # Main app component
+│   ├── App.css               # Main app styles
+│   ├── Home.css              # Home page styles
+│   ├── index.css             # Global styles
+│   └── main.tsx              # React entry point
+├── .env                      # Frontend environment variables (at moment not in use)
 ├── package.json
+├── tsconfig.json
+├── vite.config.ts
 └── README.md
 ```
 
