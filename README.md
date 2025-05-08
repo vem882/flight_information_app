@@ -122,12 +122,12 @@ flight_information_app/
 │   │   ├── Airport.tsx
 │   │   ├── Airline.tsx
 │   │   └── Home.tsx           
-│   │   └── index.tsx    
-│   ├── functions/            # API call utilities ja apufunktiot
+│   │   └── index.tsx         # components router
+│   ├── functions/            # API call utilities ja support functions
 │   │   ├── doApiCall.ts
 │   │   ├── doApiCall2.ts
 │   │   ├── flightSummary.ts
-│   │   └── index.tsx               # Muut funktiot
+│   │   └── index.tsx               # functions router
 │   ├── App.tsx               # Main app component
 │   ├── App.css               # Main app styles
 │   ├── Home.css              # Home page styles
